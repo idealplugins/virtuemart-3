@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension version="1.5" type="plugin" group="vmpayment" >
+	<name>VM - Payment, Targetpay</name>
+	<creationDate>June 2013</creationDate>
+	<author>Yellow Melon</author>
+	<authorUrl>http://www.yellowmelon.nl</authorUrl>
+	<copyright>Copyright (C) 2013 Yellow Melon</copyright>
+	<license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
+	<version>1</version>
+	<description><![CDATA[<a href="http://www.idealplugins.nl" target="_blank">iDEALplugins</a> ... makes online payments easy. ]]>
+	</description>
+	
+	
+	<languages folder="language">
+		<language tag="en-GB">en-GB.plg_vmpayment_targetpay.ini</language>
+		<language tag="nl-NL">nl-NL.plg_vmpayment_targetpay.ini</language>
+	</languages>
+	
+	<files folder="plugins/vmpayment/targetpay">
+		<filename plugin="targetpay">targetpay.php</filename>
+		<filename plugin="targetpay">targetpay.class.php</filename>
+		<filename plugin="targetpay">targetpay_ideal.sql</filename>
+	</files>
+
+	<media folder="media/plg_vmpayment_targetpay" destination="plg_vmpayment_targetpay">
+			<folder>images</folder>
+	</media>
+
+	<!-- Install Database Section -->
+	<install>
+			<sql>
+				<file folder="plugins/vmpayment/targetpay" driver="mysql" charset="utf8">targetpay_ideal.sql</file>
+			</sql>
+	</install>
+
+    <!-- No uninstall, if you click on uninstall by accident the shop will have an issue. Updates and modifications will be done in updates. -->
+	<params addpath="/administrator/components/com_virtuemart/elements">
+		<param type="vmjpluginwarning" />
+		<param type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_TITLE" level="level1" />
+		<param type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_WARNING" />
+
+		<param type="spacer" default="VMPAYMENT_TARGETPAY_RESTRICTIONS" level="level1" />
+		<param type="text" name="targetpay_rtlo"  size="50" label="VMPAYMENT_TARGETPAY_RTLO" default="93929" description="VMPAYMENT_TARGETPAY_RTLO_DESC" /><!--// Default TargetPay-->
+				 
+		<param name="payment_currency" type="vmacceptedcurrency" default="47" label="VMPAYMENT_TARGETPAY_CURRENCY" description="VMPAYMENT_TARGETPAY_CURRENCY_DESC" />
+		<param name="countries" type="vmcountries"  scope="com_virtuemart" default="" label="VMPAYMENT_TARGETPAY_COUNTRIES" description="VMPAYMENT_TARGETPAY_COUNTRIES_DESC"/>
+
+		<param type="spacer" default="" level="level1" />
+		<param type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_STATUSES" level="level1" />
+		<param name="status_pending" type="vmorderstate" scope="com_virtuemart" default="P" label="VMPAYMENT_STATUS_PENDING" description="VMPAYMENT_STATUS_PENDING_DESC" />
+		<param name="status_success" type="vmorderstate" scope="com_virtuemart" default="C" label="VMPAYMENT_STATUS_SUCCESS" description="VMPAYMENT_STATUS_SUCCESS_DESC" />
+		<param name="status_canceled" type="vmorderstate" scope="com_virtuemart" default="X" label="VMPAYMENT_STATUS_FAILED" description="VMPAYMENT_STATUS_FAILED_DESC" />
+		<param type="spacer" default="" level="level1" />
+    </params>
+    <vmconfig>
+        <fields name="params">
+			<fieldset name="basic">
+
+				
+				<field type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_TITLE" level="level1"/>
+				<field type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_WARNING"/>
+				
+				
+                <field name="targetpay_rtlo" type="text" size="50" default="93929" label="VMPAYMENT_TARGETPAY_RTLO" description="VMPAYMENT_TARGETPAY_RTLO_DESC"/>
+                
+                <field type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_TITLE" level="level1"/>
+				<field type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_WARNING"/>
+                
+                <field name="payment_currency" type="vmacceptedcurrency" size="47" default="93929" label="VMPAYMENT_TARGETPAY_CURRENCY" description="VMPAYMENT_TARGETPAY_CURRENCY_DESC"/>
+                <field name="countries" type="vmcountries" size="50" scope="com_virtuemart" default="" label="VMPAYMENT_TARGETPAY_COUNTRIES" description="VMPAYMENT_TARGETPAY_COUNTRIES_DESC"/>
+                
+                <field type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_TITLE" level="level1"/>
+				<field type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_WARNING"/>
+                
+				<field name="status_pending" type="vmorderstate" scope="com_virtuemart" default="P" label="VMPAYMENT_STATUS_PENDING_DESC" />
+				<field name="status_success" type="vmorderstate" scope="com_virtuemart" default="C" label="VMPAYMENT_STATUS_SUCCESS_DESC" />
+				<field name="status_canceled" type="vmorderstate" scope="com_virtuemart" default="X" label="VMPAYMENT_STATUS_FAILED_DESC" />
+                
+            </fieldset>
+        </fields>
+    </vmconfig>
+</extension>
