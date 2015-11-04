@@ -57,6 +57,10 @@ class plgVmpaymentTargetpay extends vmPSPlugin {
 		$this->setConfigParameterable ($this->_configTableFieldName, $varsToPush);
 	}
 
+	function plgVmDeclarePluginParamsPaymentVM3( &$data) {
+		return $this->declarePluginParams('payment', $data);
+	}
+	
 	public function getVmPluginCreateTableSQL () {
 
 		return $this->createTableSQL ('Payment Targetpay Table');
