@@ -25,7 +25,7 @@ if (!class_exists('TargetPayCore')) {
 class plgVmpaymentTargetpay extends vmPSPlugin {
 
 	public static $_this = FALSE;
-	public $appId = 'e36dc085dc5a5341fd73e086d40be1b2';
+	public $appId = 'bbb31e3f01d6291c12d29dbb86bc9f77';
 	
 	function __construct (& $subject, $config) {
 
