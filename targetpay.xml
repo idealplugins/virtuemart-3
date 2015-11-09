@@ -69,6 +69,22 @@
                 <field name="payment_currency" type="vmacceptedcurrency" size="47" default="93929" label="VMPAYMENT_TARGETPAY_CURRENCY" description="VMPAYMENT_TARGETPAY_CURRENCY_DESC"/>
                 <field name="countries" type="vmcountries" size="50" scope="com_virtuemart" default="" label="VMPAYMENT_TARGETPAY_COUNTRIES" description="VMPAYMENT_TARGETPAY_COUNTRIES_DESC"/>
                 
+                <field name="targetpay_enable_ide" type="list" size="15" default="1" label="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_IDE" description="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_IDE_DESC">
+                    <option value="1">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_YES</option>
+                    <option value="0">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_NO</option>
+                </field>
+                
+                
+                <field name="targetpay_enable_mrc" type="list" size="15" default="1" label="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_MRC" description="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_MRC_DESC">
+                    <option value="1">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_YES</option>
+                    <option value="0">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_NO</option>
+                </field>
+                
+                <field name="targetpay_enable_deb" type="list" size="15" default="1" label="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_DEB" description="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_DEB_DESC">
+                    <option value="1">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_YES</option>
+                    <option value="0">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_NO</option>
+                </field>
+                
                 <field type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_TITLE" level="level1"/>
 				<field type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_WARNING"/>
                 
