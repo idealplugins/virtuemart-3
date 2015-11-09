@@ -40,12 +40,15 @@ class plgVmpaymentTargetpay extends vmPSPlugin {
 		$this->_tableId = 'id'; //'virtuemart_targetpay_id';
 
 		$varsToPush = array('targetpay_rtlo'        => array('', 'char'),
-		                    'payment_currency'    => array('', 'char'),
-		                    'countries'           => array('', 'char'),
-		                    'cost_per_transaction'
-		                                          => array('', 'int'),
-		                    'cost_percent_total'
-		                                          => array('', 'int'),
+		                    'payment_currency'    	=> array('', 'char'),
+		                    'countries'           	=> array('', 'char'),
+		                    'cost_per_transaction' 	=> array('', 'int'),
+							'cost_percent_total' 	=> array('', 'int'),
+							
+							'targetpay_enable_ide'  => array('', 'int'),
+		                    'targetpay_enable_mrc'  => array('', 'int'),
+		                    'targetpay_enable_deb'  => array('', 'int'),
+							
 		                    'min_amount'          => array('', 'int'),
 		                    'max_amount'          => array('', 'int'),
 		                    'tax_id'              => array(0, 'int'),
@@ -216,6 +219,16 @@ function plgVmConfirmedOrder ($cart, $order, $payment_method = '') {
 				foreach($bankList AS $key => $value) {
 					$arrKey = (substr($key,3,strlen($key))) ? substr($key,3,strlen($key)) : substr($key,0,3);
 					$bankArrByPaymentOption[substr($key,0,3)][$arrKey] = $value;
+				}
+				/* remove unwanted paymethods */
+				if($method->targetpay_enable_ide == 0) {
+					unset($bankArrByPaymentOption['IDE']);
+				}
+				if($method->targetpay_enable_mrc == 0) {
+					unset($bankArrByPaymentOption['MRC']);
+				}
+				if($method->targetpay_enable_deb == 0) {
+					unset($bankArrByPaymentOption['DEB']);
 				}
 				$paymentOptions = array();
 				foreach($bankArrByPaymentOption AS $paymentOption => $bankCodesArr) {
