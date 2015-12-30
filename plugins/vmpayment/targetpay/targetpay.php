@@ -79,7 +79,9 @@ class plgVmpaymentTargetpay extends vmPSPlugin {
 		$html = '';
 		if(isset($_POST)) {
 			foreach($_POST AS $key => $value) {
-				$html .= '<input type="hidden" value="'.htmlspecialchars($value).'" name="'.htmlspecialchars($key).'" />';
+				if(!is_array($value)) {
+					$html .= '<input type="hidden" value="'.htmlspecialchars($value).'" name="'.htmlspecialchars($key).'" />';
+				}
 			}
 		}
 		return $html;
