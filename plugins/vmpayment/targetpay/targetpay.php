@@ -417,9 +417,9 @@ function plgVmConfirmedOrder ($cart, $order, $payment_method = '') {
 		
 		$query->from('#__targetpay_ideal');
 		if($by == 'cart') {
-			$query->where("cart_id = '".$id."'");
+			$query->where("cart_id = '".$db->quote($id)."'");
 		} else {
-			$query->where("transaction_id = '".$id."'");
+			$query->where("transaction_id = '".$db->quote($id)."'");
 		}
 		 
 		// Reset the query using our newly populated query object.
