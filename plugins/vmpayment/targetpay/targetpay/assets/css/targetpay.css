@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+/* ----- confirm page ----- */
+.targetpay-methods {padding: 10px 0 10px 20px;}
+.sel-payment-data {display: block;}
+.targetpay-method-icon {width: auto; height: 40px;}
+/* ----- end confirm page ----- */
+/* ----- ordersummary page ----- */
+.ordersummary td {padding:10px;}
+/* ----- end ordersummary page ----- */
