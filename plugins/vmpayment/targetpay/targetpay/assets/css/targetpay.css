@@ -2,8 +2,9 @@
 /* ----- confirm page ----- */
 .targetpay-methods {padding: 10px 0 10px 20px;}
 .sel-payment-data {display: block;}
-.targetpay-method-icon {width: auto; height: 40px;}
+.targetpay-method-icon {width: auto;}
 /* ----- end confirm page ----- */
 /* ----- ordersummary page ----- */
-.ordersummary td {padding:10px;}
+.ordersummary {border-collapse: separate; border-spacing: 0.125rem; width: 100%}
+.ordersummary td {background: #ebebeb none repeat scroll 0 0; flex: 0 0 45%; padding: 0.625rem;}
 /* ----- end ordersummary page ----- */

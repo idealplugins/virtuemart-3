@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension version="3.1" type="plugin" group="vmpayment" >
     <name>VM - Payment, Targetpay</name>
-    <creationDate>Nov 2016</creationDate>
-    <author>Targetpay</author>
-    <authorUrl>https://www.targetpay.com/</authorUrl>
+    <creationDate>Feb 2017</creationDate>
+    <author>Idealplugins.nl</author>
+    <authorUrl>http://www.idealplugins.nl</authorUrl>
     <copyright>Copyright (C) 2016 Targetpay</copyright>
     <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
     <version>3.1</version>
     <description><![CDATA[<a href="http://www.idealplugins.nl" target="_blank">iDEALplugins</a> ... makes online payments easy. ]]></description>
   
     <languages folder="language">
-        <language tag="en-GB">en-GB.plg_vmpayment_targetpay.ini</language>
-        <language tag="nl-NL">nl-NL.plg_vmpayment_targetpay.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_vmpayment_targetpay.ini</language>
+        <language tag="nl-NL">nl-NL/nl-NL.plg_vmpayment_targetpay.ini</language>
     </languages>
 
     <files>
         <filename plugin="targetpay">targetpay.php</filename>
+        <filename>install.sql</filename>
+	<filename plugin="targetpay">LICENSE</filename>
+	<filename plugin="targetpay">README.md</filename>
         <folder>targetpay</folder>
         <folder>language</folder>
     </files>
@@ -27,7 +30,7 @@
         <param type="spacer" default="VMPAYMENT_TARGETPAY_PAYMENT_WARNING" />
 
         <param type="spacer" default="VMPAYMENT_TARGETPAY_RESTRICTIONS" level="level1" />
-        <param type="text" name="targetpay_rtlo"  size="50" label="VMPAYMENT_TARGETPAY_RTLO" default="39411" description="VMPAYMENT_TARGETPAY_RTLO_DESC" /><!--// Default TargetPay-->
+        <param type="text" name="targetpay_rtlo"  size="50" label="VMPAYMENT_TARGETPAY_RTLO" default="" description="VMPAYMENT_TARGETPAY_RTLO_DESC" /><!--// Default TargetPay-->
              
         <param name="countries" type="vmcountries"  scope="com_virtuemart" default="" label="VMPAYMENT_TARGETPAY_COUNTRIES" description="VMPAYMENT_TARGETPAY_COUNTRIES_DESC"/>
         <param name="targetpay_test_mode" type="text" scope="com_virtuemart" default="0" label="VMPAYMENT_TARGETPAY_TEST_MODE" description="VMPAYMENT_TARGETPAY_TEST_MODE_DESC" />
@@ -66,7 +69,17 @@
                     <option value="1">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_YES</option>
                     <option value="0">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_NO</option>
                 </field>
-                    
+                
+                <field name="targetpay_enable_wal" type="list" size="15" default="1" label="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_WAL" description="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_WAL_DESC">
+                    <option value="1">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_YES</option>
+                    <option value="0">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_NO</option>
+                </field>
+                
+                <field name="targetpay_enable_cc" type="list" size="15" default="0" label="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_CC" description="VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_OPTION_CC_DESC">
+                    <option value="1">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_YES</option>
+                    <option value="0">VMPAYMENT_TARGETPAY_ENABLE_PAYMENT_NO</option>
+                </field>
+                
                 <field class="" name="targetpay_test_mode" type="radio" default="0" label="VMPAYMENT_TARGETPAY_TEST_MODE"
                            description="VMPAYMENT_TARGETPAY_TEST_MODE_DESC">
                     <option value="0">VMPAYMENT_TARGETPAY_ENABLE_TEST_MODE_NO</option>
@@ -83,4 +96,10 @@
             </fieldset>
         </fields>
     </vmconfig>
+
+	<install>
+	    <sql>
+		<file driver="mysql" charset="utf8">install.sql</file>
+	    </sql>
+	</install>
 </extension>

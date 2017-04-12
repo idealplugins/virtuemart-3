@@ -3,18 +3,11 @@
 namespace targetpay\helpers;
 
 /**
- * @file     Provides support for TargetPay iDEAL, Mister Cash and Sofort Banking
+ * @file     Provides support for TargetPay iDEAL, Bancontact and Sofort Banking
  * @author     TargetPay.
  * @url         https://www.targetpay.com/
  * @release     22-11-2016
  * @ver         2.4
- *
- * Changes:
- *
- * v2.1     Cancel url added
- * v2.2     Verify Peer disabled, too many problems with this
- * v2.3     Added paybyinvoice (achteraf betalen) and paysafecard (former Wallie)
- * v2.4     Removed IP_range and deprecated checkReportValidity . Because it is bad practice.
  */
 
 /**
@@ -44,21 +37,19 @@ class TargetPayCore
     const ERR_SOFORT_NO_COUNTRY = "Geen land geselecteerd voor Sofort | No country selected for Sofort";
 
     const ERR_PAYBYINVOICE = "Fout bij achteraf betalen|Error with paybyinvoice";
-    
     // Constant array's
     protected $paymentOptions = array(
         "AUTO",
         "IDE",
         "MRC",
         "DEB",
-        "AFT",
-        "WAL"
+        "WAL",
+        "CC"
     );
 
     /*
      * If payMethod is set to 'AUTO' it will decided on the value of bankId
      * Then, when requested the bankId list will be filled with
-     *
      * a) 'IDE' + the bank ID's for iDEAL
      * b) 'MRC' for Mister Cash
      * c) 'DEB' + countrycode for Sofort Banking, e.g. DEB49 for Germany
@@ -68,18 +59,17 @@ class TargetPayCore
         "IDE" => 84,
         "MRC" => 49,
         "DEB" => 10,
-        "AFT" => 1,
-        "WAL" => 10
+        "WAL" => 10,
+        "CC" => 100
     );
 
     protected $checkAPIs = array(
         "IDE" => "https://www.targetpay.com/ideal/check",
         "MRC" => "https://www.targetpay.com/mrcash/check",
         "DEB" => "https://www.targetpay.com/directebanking/check",
-        "AFT" => "https://www.targetpay.com/afterpay/check",
-        "WAL" => "http://www.targetpay.com/paysafecard/check"
+        "WAL" => "https://www.targetpay.com/paysafecard/check",
+        "CC" => "https://www.targetpay.com/creditcard_atos/check"
     );
-    
     // Variables
     protected $rtlo = null;
 
@@ -93,11 +83,13 @@ class TargetPayCore
 
     protected $bankId = null;
 
+    protected $countryId = null;
+
     protected $appId = null;
 
     protected $amount = 0;
 
-    protected $description = null;
+    protected $descriptions = null;
 
     protected $returnUrl = null;
     // When using the AUTO-setting; %payMethod% will be replaced by the actual payment method just before starting the payment
@@ -117,14 +109,13 @@ class TargetPayCore
 
     protected $parameters = array();
     // Additional parameters
-
     /**
-     * Constructor
-     *
-     * @param int $rtlo
-     *            Layoutcode
-     */
-    public function __construct($payMethod, $rtlo = false, $appId = false, $language = "nl", $testMode = 0)
+    * Constructor
+    *
+    * @param int $rtlo
+    *            Layoutcode
+    */
+    public function __construct($payMethod, $rtlo = false, $appId = false, $language = "nl", $testMode = false)
     {
         $payMethod = strtoupper($payMethod);
         if (in_array($payMethod, $this->paymentOptions)) {
@@ -133,19 +124,17 @@ class TargetPayCore
             return false;
         }
         $this->rtlo = (int) $rtlo;
-        $this->testMode = $testMode;
+        $this->testMode = ($testMode) ? '1' : '0';
         $this->language = strtolower(substr($language, 0, 2));
         $this->appId = strtolower(preg_replace("/[^a-z\d_]/i", "", $appId));
     }
 
     /**
-     * Get list with banks based on PayMethod setting (AUTO, IDE, .
-     * .. etc.)
+     * Get list with banks based on PayMethod setting (AUTO, IDE, etc.)
      */
     public function getBankList()
     {
         $url = "https://www.targetpay.com/api/idealplugins?banklist=" . urlencode($this->payMethod);
-        
         $xml = $this->httpRequest($url);
         if (! $xml) {
             $banks_array["IDE0001"] = "Bankenlijst kon niet opgehaald worden bij TargetPay, controleer of curl werkt!";
@@ -156,7 +145,6 @@ class TargetPayCore
                 $banks_array["{$bank->bank_id}"] = "{$bank->bank_name}";
             }
         }
-        
         return $banks_array;
     }
 
@@ -179,72 +167,51 @@ class TargetPayCore
             $this->errorMessage = self::ERR_NO_RTLO;
             return false;
         }
-        
         if (! $this->amount) {
             $this->errorMessage = self::ERR_NO_AMOUNT;
             return false;
         }
-        
         if ($this->amount < $this->minimumAmounts[$this->payMethod]) {
             $this->errorMessage = self::ERR_AMOUNT_TOO_LOW;
             return false;
         }
-        
         if (! $this->description) {
             $this->errorMessage = self::ERR_NO_DESCRIPTION;
             return false;
         }
-        
         if (! $this->returnUrl) {
             $this->errorMessage = self::ERR_NO_RETURN_URL;
             return false;
         }
-        
         if (! $this->reportUrl) {
             $this->errorMessage = self::ERR_NO_REPORT_URL;
             return false;
         }
-        
         if (($this->payMethod == "IDE") && (! $this->bankId)) {
             $this->errorMessage = self::ERR_IDEAL_NO_BANK;
             return false;
         }
-        
         if (($this->payMethod == "DEB") && (! $this->countryId)) {
-            $this->errorMessage = self::ERR_SOFORT_NO_BANK;
+            $this->errorMessage = self::ERR_SOFORT_NO_COUNTRY;
             return false;
         }
-        
         $this->returnUrl = str_replace("%payMethod%", $this->payMethod, $this->returnUrl);
         $this->cancelUrl = str_replace("%payMethod%", $this->payMethod, $this->cancelUrl);
         $this->reportUrl = str_replace("%payMethod%", $this->payMethod, $this->reportUrl);
-        
-        $url = "https://www.targetpay.com/api/idealplugins?" . "paymethod=" . urlencode($this->payMethod) . "&" . "app_id=" . urlencode($this->appId) . "&" . "rtlo=" . urlencode($this->rtlo) . "&" . "bank=" . urlencode($this->bankId) . "&" . "amount=" . urlencode($this->amount) . "&" . "description=" . urlencode($this->description) . "&" . "currency=" . urlencode($this->currency) . "&" . (($this->payMethod == "IDE") ? "ver=2&language=nl&" : "") . (($this->payMethod == "AFT") ? "ver=2&language=nl&" : "") . (($this->payMethod == "MRC") ? "lang=" . urlencode(
-            $this->getLanguage(
-                array(
-                "NL",
-                "FR",
-                "EN"
-                ),
-                "NL"
-            )
-        ) . "&" : "") . (($this->payMethod == "DEB") ? "type=1&country=" . urlencode($this->countryId) . "&lang=" . urlencode(
-            $this->getLanguage(
-                array(
-                    "NL",
-                    "EN",
-                    "DE"
-                    ),
-                "DE"
-            )
-        ) . "&" : "") . "userip=" . urlencode($_SERVER["REMOTE_ADDR"]) . "&" . "domain=" . urlencode($_SERVER["HTTP_HOST"]) . "&" . "returnurl=" . urlencode($this->returnUrl) . "&" . ((! empty($this->cancelUrl)) ? "cancelurl=" . urlencode($this->cancelUrl) . "&" : "") . "reporturl=" . urlencode($this->reportUrl) . "&test=1";
-        
+        $url = "https://www.targetpay.com/api/idealplugins?" . "paymethod=" . urlencode($this->payMethod) . "&" . "app_id=" . urlencode($this->appId) . "&" . "rtlo=" . urlencode($this->rtlo) . "&" . "bank=" . urlencode($this->bankId) . "&" . "amount=" . urlencode($this->amount) . "&" . "description=" . urlencode($this->description) . "&" . "currency=" . urlencode($this->currency) . "&" . (($this->payMethod == "IDE") ? "ver=2&language=nl&" : "") . (($this->payMethod == "MRC") ? "lang=" . urlencode($this->getLanguage(array(
+            "NL",
+            "FR",
+            "EN"
+        ), "NL")) . "&" : "") . (($this->payMethod == "DEB") ? "type=1&country=" . urlencode($this->countryId) . "&lang=" . urlencode($this->getLanguage(array(
+            "NL",
+            "EN",
+            "DE"
+        ), "DE")) . "&" : "") . "userip=" . urlencode($_SERVER["REMOTE_ADDR"]) . "&" . "domain=" . urlencode($_SERVER["HTTP_HOST"]) . "&" . "returnurl=" . urlencode($this->returnUrl) . "&" . ((! empty($this->cancelUrl)) ? "cancelurl=" . urlencode($this->cancelUrl) . "&" : "") . "reporturl=" . urlencode($this->reportUrl);
         if (is_array($this->parameters)) {
             foreach ($this->parameters as $k => $v) {
                 $url .= "&" . $k . "=" . urlencode($v);
             }
         }
-        
         $result = $this->httpRequest($url);
         if (substr($result, 0, 6) == "000000") {
             $result = substr($result, 7);
@@ -266,9 +233,6 @@ class TargetPayCore
      *
      *            Returns true if payment successfull (or testmode) and false if not
      *
-     *            After payment:
-     *            - Read the errors with getErrorMessage()
-     *            - Get user information using getConsumerInfo()
      */
     public function checkPayment($transactionId)
     {
@@ -276,32 +240,24 @@ class TargetPayCore
             $this->errorMessage = self::ERR_NO_RTLO;
             return false;
         }
-        
         if (! $transactionId) {
             $this->errorMessage = self::ERR_NO_TXID;
             return false;
         }
-        
         $url = $this->checkAPIs[$this->payMethod] . "?" . "rtlo=" . urlencode($this->rtlo) . "&" . "trxid=" . urlencode($transactionId) . "&" . "once=0&" . "test=" . (($this->testMode) ? "1" : "0");
-        
         $result = $this->httpRequest($url);
-        
         $_result = explode("|", $result);
-        
         $consumerBank = "";
         $consumerName = "";
         $consumerCity = "NOT PROVIDED";
-        
         if (count($_result) == 4) {
             list($resultCode, $consumerBank, $consumerName, $consumerCity) = $_result;
         } else {
             list($resultCode) = $_result;
         }
-        
         $this->consumerInfo["bankaccount"] = "bank";
         $this->consumerInfo["name"] = "customername";
         $this->consumerInfo["city"] = "city";
-        
         if ($resultCode == "000000 OK") {
             $this->consumerInfo["bankaccount"] = $consumerBank;
             $this->consumerInfo["name"] = $consumerName;
@@ -380,6 +336,14 @@ class TargetPayCore
                 return true;
             } elseif ($bankId == "MRC") {
                 $this->payMethod = "MRC";
+                $this->bankId = false;
+                return true;
+            } elseif ($bankId == "CC") {
+                $this->payMethod = "CC";
+                $this->bankId = false;
+                return true;
+            } elseif ($bankId == "WAL") {
+                $this->payMethod = "WAL";
                 $this->bankId = false;
                 return true;
             } elseif (substr($bankId, 0, 3) == "DEB") {

@@ -8,16 +8,16 @@
  */
 
 defined('_JEXEC') or die();
-vmJsApi::css('targetpay','plugins/vmpayment/targetpay/targetpay/assets/css/');
+vmJsApi::css('targetpay', 'plugins/vmpayment/targetpay/targetpay/assets/css/');
 
 $paymentTable = $viewData['paymentTable'];
 ?>
 <br />
-<table cellpadding="2" class="ordersummary">
-<?php 
-    echo $this->getHtmlRow('TARGETPAY_PAYMENT_NAME',  $paymentTable->payment_name);
+<table class="ordersummary">
+<?php
+    echo $this->getHtmlRow('TARGETPAY_PAYMENT_NAME', $paymentTable->payment_name);
     echo $this->getHtmlRow('TARGETPAY_ORDER_NUMBER', $paymentTable->order_number);
-    echo $this->getHtmlRow(Jtext::_('TARGETPAY_PAYMENT_CHECK_RESULT'), $paymentTable->tp_message);
+    echo $this->getHtmlRow(Jtext::_('VMPAYMENT_TARGETPAY_PAYMENT_CHECK_RESULT'), $paymentTable->tp_message);
 ?>
 </table>
 <br />
